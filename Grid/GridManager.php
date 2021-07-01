@@ -189,8 +189,18 @@ class GridManager implements \IteratorAggregate, \Countable
                 ++$i;
             }
 
-            if ($view === null) {
+            if (null === $view) {
                 return $parameters;
+            }
+
+            if ($this->container->has('twig')) {
+                if (null === $response) {
+                    $response = new Response();
+                }
+
+                $response->setContent($this->container->get('twig')->render($view, $parameters));
+
+                return $response;
             }
 
             return $this->container->get('templating')->renderResponse($view, $parameters, $response);
