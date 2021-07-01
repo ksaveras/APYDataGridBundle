@@ -2144,11 +2144,21 @@ class Grid implements GridInterface
 
             $parameters = array_merge(['grid' => $this], $parameters);
 
-            if ($view === null) {
+            if (null === $view) {
                 return $parameters;
-            } else {
-                return $this->container->get('templating')->renderResponse($view, $parameters, $response);
             }
+
+            if ($this->container->has('twig')) {
+                if (null === $response) {
+                    $response = new Response();
+                }
+
+                $response->setContent($this->container->get('twig')->render($view, $parameters));
+
+                return $response;
+            }
+
+            return $this->container->get('templating')->renderResponse($view, $parameters, $response);
         }
     }
 
